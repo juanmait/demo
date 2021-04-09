@@ -1,13 +1,13 @@
 const express = require('express');
 const busboy = require('connect-busboy');
-const fs = require('fs');
 const path = require('path');
-const { ensureUploadsExistsSync, getFilePath } = require('./lib/util');
+const util = require('./lib/util');
+const stream = require('./lib/stream');
 
 const PORT = 4321;
 
 // ensure that the uploads directory exists
-ensureUploadsExistsSync();
+util.ensureUploadsExistsSync();
 
 const app = express();
 
@@ -27,24 +27,20 @@ app.use(
 /**
  * Create route /upload which handles the post request
  */
-app.route('/upload').post((req, res, next) => {
+app.route('/upload').post((req, res) => {
   req.pipe(req.busboy);
 
   req.busboy.on('file', (fieldname, file, filename) => {
     console.log(`Upload of '${filename}' started`);
 
-    const filepat = getFilePath(filename);
-    fs.writeFileSync(filepat, '');
-
-    // Create a write stream of the new file
-    const writablleStream = fs.createWriteStream(filepat);
+    const writable = stream.createStream(filename);
 
     // Pipe it trough
-    file.pipe(writablleStream);
+    file.pipe(writable);
 
     // On finish of the upload
-    writablleStream.on('close', () => {
-      console.log(`Upload of '${filename}' finished`);
+    writable.on('close', () => {
+      console.log(`Upload of '${writable.getFileName()}' finished`);
       res.sendFile(path.join(__dirname, 'upload-success.html'));
     });
   });
