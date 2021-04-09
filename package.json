@@ -8,5 +8,10 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "busboy": "^0.3.1",
+    "connect-busboy": "0.0.2",
+    "express": "^4.17.1"
+  }
 }
