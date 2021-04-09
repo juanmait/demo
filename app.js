@@ -30,10 +30,12 @@ app.use(
 app.route('/upload').post((req, res) => {
   req.pipe(req.busboy);
 
+  const writable = stream.createStream();
+
   req.busboy.on('file', (fieldname, file, filename) => {
     console.log(`Upload of '${filename}' started`);
 
-    const writable = stream.createStream(filename);
+    writable.setFileName(filename);
 
     // Pipe it trough
     file.pipe(writable);
@@ -43,6 +45,12 @@ app.route('/upload').post((req, res) => {
       console.log(`Upload of '${writable.getFileName()}' finished`);
       res.sendFile(path.join(__dirname, 'upload-success.html'));
     });
+  });
+
+  req.busboy.on('field', function (key, value) {
+    if (key === 'provider') {
+      writable.setProviderName(value);
+    }
   });
 });
 
