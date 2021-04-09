@@ -43,6 +43,7 @@ app.route('/upload').post((req, res) => {
     // On finish of the upload
     writable.on('close', () => {
       console.log(`Upload of '${writable.getFileName()}' finished`);
+      console.info('stored files so far:', writable.getFileList());
       res.sendFile(path.join(__dirname, 'upload-success.html'));
     });
   });
