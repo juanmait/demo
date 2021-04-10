@@ -1,13 +1,8 @@
 const express = require('express');
 const busboy = require('connect-busboy');
 const path = require('path');
-const util = require('./lib/util');
 const stream = require('./lib/stream');
-
-const PORT = 4321;
-
-// ensure that the uploads directory exists
-util.ensureUploadsExistsSync();
+const config = require('./config');
 
 const app = express();
 
@@ -17,44 +12,45 @@ app.use(express.static('public'));
 // configure and register `busybody` middleware
 app.use(
   busboy({
-    highWaterMark: 2 * 1024 * 1024, // 2MiB buffer
+    highWaterMark: config.HIGH_WATER_MARK,
     limits: {
-      fileSize: 100 * 1024 * 1024, // 100MiB upload limit
+      fileSize: config.UPLOAD_SIZE_LIMIT,
     },
   })
 );
 
 /**
- * Create route /upload which handles the post request
+ * Upload handler
  */
 app.route('/upload').post((req, res) => {
   req.pipe(req.busboy);
 
-  const writable = stream.createStream();
+  const parser = new stream.Parser();
 
-  req.busboy.on('file', (fieldname, file, filename) => {
+  req.busboy.on('file', (fieldname, readableFileStream, filename) => {
     console.log(`Upload of '${filename}' started`);
 
-    writable.setFileName(filename);
+    // TODO: validate `fieldname` (now we accept any file).
 
-    // Pipe it trough
-    file.pipe(writable);
-
-    // On finish of the upload
-    writable.on('close', () => {
-      console.log(`Upload of '${writable.getFileName()}' finished`);
-      console.info('stored files so far:', writable.getFileList());
+    /**
+     * Start the streaming and give a callback to be called
+     * when the whole process finishes
+     */
+    parser.start(filename, readableFileStream, () => {
       res.sendFile(path.join(__dirname, 'upload-success.html'));
     });
   });
 
   req.busboy.on('field', function (key, value) {
     if (key === 'provider') {
-      writable.setProviderName(value);
+      /**
+       * I don't know what event is fired first (file | field).. bummer..
+       */
+      parser.setProviderName(value);
     }
   });
 });
 
-app.listen(PORT, () => {
-  console.info('server listengin on', PORT);
+app.listen(config.SERVER_PORT, () => {
+  console.info('server listengin on', config.SERVER_PORT);
 });
