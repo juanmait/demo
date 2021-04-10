@@ -1,6 +1,6 @@
 ## Demo
 
-> Requirements [here](./requirements)
+> Requirements [here](./requirements.md)
 
 ## Install
 
