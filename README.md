@@ -1,42 +1,36 @@
-# Coding Challenge
+## Demo
 
-> 1 to 2 hours - NodeJS backend
+> Requirements [here](./requirements)
 
-You work on a product that receives potentially large files in CSV format,
-process them and import their data into our database. However, providers do not
-all use the same layout of columns. The order may differ between providers, they
-may only send a subset of the columns, or they may include additional columns we
-do not wish to capture.
+## Install
 
-# # Task
+```
+npm install
+```
 
-Build an API with a single endpoint that accepts a file upload in the CSV format
-and the provider name that sent the file, looks up a configuration defining the
-column layout and parses the CSV into either a file or - as a stretch goal -
-into an in-memory database (see below).The columns we care about are defined
-below in the “Columns” section.
+## Start
 
-### Columns
+```bash
+npm start
+# Default server port `4321`
+# can be configured in  `config.js`
+```
 
-- UUID
-- VIN (alphanumerical vehicle id)
-- Make
-- Model
-- Mileage
-- Year
-- Price
-- Zip Code
-- Create Date
-- Update Date
+## What?
 
-**You are responsible for**:
+It is basically a CSV to JSON parser that writes the results in a file using
+streaming.
 
-- choosing the framework/libraries/architecture you’ll be using
-- defining the format of the configuration file and how it is stored/loaded.
+There is an example csv file in this repo called `10.csv` that holds `10` items
+to be processed.
 
-**Stretch goals**
+I tested with `100`, `1000`, `10000` and `100000` items. The server use
+streaming all the way down so altough i couldn't test with heavy workload it
+should allow to respond to very big file uploads while keeping low memory
+footprint.
 
-- use an in-memory database(e.g. SQLite, mongodb-memory-server) instead of a
-  file for storage
-- provide appropriate tests ensuring the desired outcome Document any
-  assumptions and design decisions you have made.
+I staret working exactly as the requirements suggested, but at some point I
+deviated an go for a more tech concept in with performance matters, ups!
+
+There are odiously plenty of things to do here, this is just the tip of the
+iceberg.
