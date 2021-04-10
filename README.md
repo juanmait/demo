@@ -30,7 +30,7 @@ should allow to respond to very big file uploads while keeping low memory
 footprint.
 
 I staret working exactly as the requirements suggested, but at some point I
-deviated an go for a more tech concept in with performance matters, ups!
+deviated an go for a more tech concept in which performance matters, ups!
 
-There are odiously plenty of things to do here, this is just the tip of the
+There are obviously plenty of things to do here, this is just the tip of the
 iceberg.
